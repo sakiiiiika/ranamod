@@ -1,18 +1,18 @@
 package nodomain.sakiika.ranamod.event;
 
+import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import nodomain.sakiika.ranamod.RanaMod;
 import nodomain.sakiika.ranamod.entity.ModEntities;
 import nodomain.sakiika.ranamod.entity.custom.RanaEntity;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = RanaMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = RanaMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ModEventBusEvents {
 
     @SubscribeEvent
@@ -21,11 +21,8 @@ public class ModEventBusEvents {
     }
 
     @SubscribeEvent
-    public static void registerSpawnPlacement(SpawnPlacementRegisterEvent event) {
+    public static void registerSpawnPlacement(RegisterSpawnPlacementsEvent event) {
         //Handle Spawning
-        event.register(ModEntities.RANA.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-
-        //Vanilla registration method (Deprecated)
-        //SpawnPlacements.register(ModEntities.RANA.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules);
+        event.register(ModEntities.RANA.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
     }
 }

@@ -1,13 +1,12 @@
 package nodomain.sakiika.ranamod.entity.custom;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.target.*;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -45,7 +44,7 @@ public class RanaEntity extends TamableAnimal {
 
     public RanaEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.setTame(false);
+        this.setTame(false, false);
     }
 
     public final AnimationState idleAnimationState = new AnimationState();
@@ -113,9 +112,9 @@ public class RanaEntity extends TamableAnimal {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ATTACKING, false);
+    protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
+        super.defineSynchedData(pBuilder);
+        pBuilder.define(ATTACKING, false);
     }
 
     @Override
@@ -124,7 +123,7 @@ public class RanaEntity extends TamableAnimal {
         this.goalSelector.addGoal(1, new RanaPanicGoal(this, 2.0D));
         this.goalSelector.addGoal(2, new SitWhenOrderedToGoal(this));
         this.goalSelector.addGoal(3, new RanaAttackGoal(this, 2.0D, true));
-        this.goalSelector.addGoal(4, new FollowOwnerGoal(this, 1.0D, 3.0F, 1.0F, false));
+        this.goalSelector.addGoal(4, new FollowOwnerGoal(this, 1.0D, 3.0F, 1.0F));
         this.goalSelector.addGoal(5, new BreedGoal(this, 1.15D));
         this.goalSelector.addGoal(6, new RanaTemptGoal(this, 1.2D, Ingredient.of(Items.MELON_SLICE), false));
         this.goalSelector.addGoal(7, new RanaFollowParentGoal(this, 1.1D));
@@ -147,10 +146,9 @@ public class RanaEntity extends TamableAnimal {
     }
 
     // Set Attributes. from wolf
-    public void setTame(boolean pTamed) {
-        super.setTame(pTamed);
-        if (pTamed) {
-            //RETURNS NULL
+    @Override
+    protected void applyTamingSideEffects() {
+        if (this.isTame()) {
             Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(20.0D);
             this.setHealth(20.0F);
         } else {
@@ -195,7 +193,9 @@ public class RanaEntity extends TamableAnimal {
                 else pPlayer.playSound(SoundEvents.GENERIC_EAT);
 
                 //Recover health. From mobInteract() in wolf.
-                this.heal((float) Objects.requireNonNull(itemstack.getFoodProperties(this)).getNutrition());
+                FoodProperties foodproperties = itemstack.getFoodProperties(this);
+                float f = foodproperties != null ? (float)foodproperties.nutrition() : 1.0F;
+                this.heal(f);
 
                 //If player is not in creative mode. From mobInteract() in wolf.
                 if (!pPlayer.getAbilities().instabuild) {
@@ -271,10 +271,10 @@ public class RanaEntity extends TamableAnimal {
             //Add empty bottle
             pPlayer.getInventory().add(Items.GLASS_BOTTLE.getDefaultInstance());
 
-            if (this.random.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, pPlayer)) {
+            if (this.random.nextInt(3) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, pPlayer)) {
                 this.tame(pPlayer);
                 this.navigation.stop();
-                this.setTarget((LivingEntity)null);
+                this.setTarget(null);
                 this.setOrderedToSit(true);
                 //this.setInSittingPose(true);
                 this.level().broadcastEntityEvent(this, (byte)7);
@@ -296,10 +296,9 @@ public class RanaEntity extends TamableAnimal {
     public AgeableMob getBreedOffspring(ServerLevel pLevel, AgeableMob pOtherParent) {
         RanaEntity rana = ModEntities.RANA.get().create(pLevel);
         if (rana != null) {
-            UUID uuid = this.getOwnerUUID();
-            if (uuid != null) {
-                rana.setOwnerUUID(uuid);
-                rana.setTame(true);
+            if (this.isTame()) {
+                rana.setOwnerUUID(this.getOwnerUUID());
+                rana.setTame(true, true);
             }
         }
 
@@ -337,10 +336,9 @@ public class RanaEntity extends TamableAnimal {
             return false;
         /*} else if (!this.isTame()) {
             return false;*/
-        } else if (!(pOtherAnimal instanceof RanaEntity)) {
+        } else if (!(pOtherAnimal instanceof RanaEntity rana)) {
             return false;
         } else {
-            RanaEntity rana = (RanaEntity)pOtherAnimal;
             /*if (!rana.isTame()) {
                 return false;*/
             //If not both of ranas are tamed or not both of them not tamed, can't falling love and return false

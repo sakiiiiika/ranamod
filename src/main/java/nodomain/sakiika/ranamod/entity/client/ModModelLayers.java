@@ -6,5 +6,5 @@ import net.minecraft.resources.ResourceLocation;
 
 public class ModModelLayers {
     public static final ModelLayerLocation RANA_LAYER = new ModelLayerLocation(
-            new ResourceLocation(RanaMod.MOD_ID, "rana_layer"), "main");
+            ResourceLocation.fromNamespaceAndPath(RanaMod.MOD_ID, "rana_layer"), "main");
 }

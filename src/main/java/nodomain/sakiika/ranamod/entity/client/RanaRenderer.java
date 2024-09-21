@@ -1,19 +1,7 @@
 package nodomain.sakiika.ranamod.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.block.model.ItemTransform;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import nodomain.sakiika.ranamod.RanaMod;
 import nodomain.sakiika.ranamod.entity.custom.RanaEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -33,7 +21,7 @@ public class RanaRenderer extends MobRenderer<RanaEntity, RanaModel<RanaEntity>>
 
     @Override
     public ResourceLocation getTextureLocation(RanaEntity pEntity) {
-        return new ResourceLocation(RanaMod.MOD_ID, "textures/entity/rana.png");
+        return ResourceLocation.fromNamespaceAndPath(RanaMod.MOD_ID, "textures/entity/rana.png");
     }
 
     @Override

@@ -140,8 +140,8 @@ public class RanaModel<T extends Entity> extends HierarchicalModel<T> implements
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		Root.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+		Root.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 	}
 
 	public ModelPart root() {

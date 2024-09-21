@@ -1,26 +1,28 @@
 package nodomain.sakiika.ranamod;
 
-import nodomain.sakiika.ranamod.entity.ModEntities;
-import nodomain.sakiika.ranamod.entity.client.RanaRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.item.CreativeModeTabs;
-import com.mojang.logging.LogUtils;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import nodomain.sakiika.ranamod.entity.ModEntities;
+import nodomain.sakiika.ranamod.entity.client.RanaRenderer;
 import nodomain.sakiika.ranamod.item.ModItems;
 import org.slf4j.Logger;
 
-// The value here should match an entry in the META-INF/mods.toml file
+import com.mojang.logging.LogUtils;
+
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+
+// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(RanaMod.MOD_ID)
 public class RanaMod {
     // Define mod id in a common place for everything to reference
@@ -28,21 +30,25 @@ public class RanaMod {
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public RanaMod() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    // The constructor for the mod class is the first code that is run when your mod is loaded.
+    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
+    public RanaMod(IEventBus modEventBus, ModContainer modContainer) {
+        // Register the commonSetup method for modloading
+        modEventBus.addListener(this::commonSetup);
 
         ModEntities.register(modEventBus);
         ModItems.register(modEventBus);
 
-        // Register the commonSetup method for modloading
-        modEventBus.addListener(this::commonSetup);
-
-        // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
+        // Register ourselves for server and other game events we are interested in.
+        // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
+        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
+        NeoForge.EVENT_BUS.register(this);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
 
+        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -63,7 +69,7 @@ public class RanaMod {
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {

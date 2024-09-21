@@ -10,7 +10,6 @@ import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 import java.util.Objects;
 
-// TODO: Won't work in 1.10.2+?
 public class RanaAttackGoal extends MeleeAttackGoal {
     private final RanaEntity entity;
     private final int INITIAL_ATTACK_DELAY = 21; //Attack begins (1 + 1/20)sec after animation started
@@ -32,8 +31,8 @@ public class RanaAttackGoal extends MeleeAttackGoal {
     }
 
     @Override
-    protected void checkAndPerformAttack(LivingEntity pEnemy, double pDistToEnemySqr) {
-        if (isEnemyWithinAttackDistance(pEnemy, pDistToEnemySqr)) {
+    protected void checkAndPerformAttack(LivingEntity pEnemy) {
+        if (isEnemyWithinAttackDistance(pEnemy)) {
             shouldCountTillNextAttack = true;
 
             if(isTimeToStartAttackAnimation()) {
@@ -52,15 +51,17 @@ public class RanaAttackGoal extends MeleeAttackGoal {
         }
     }
 
-    private boolean isEnemyWithinAttackDistance(LivingEntity pEnemy, double pDistToEnemySqr) {
-        return pDistToEnemySqr <= this.getAttackReachSqr(pEnemy);
+    private boolean isEnemyWithinAttackDistance(LivingEntity pEnemy) {
+        return this.mob.distanceToSqr(pEnemy) < 4.0F;
     }
 
-    //Overrode and slightly improved super method to allow rana easyly attack enemy
+    /*
+    //Overrode and slightly improved super method to allow rana easily attack enemy
     @Override
     protected double getAttackReachSqr(LivingEntity pAttackTarget) {
         return (double)(this.mob.getBbWidth() * 4.0F * this.mob.getBbWidth() * 4.0F + pAttackTarget.getBbWidth());
     }
+    */
 
     protected void resetAttackCooldown() {
         this.ticksUntilNextAttack = this.adjustedTickDelay(INITIAL_ATTACK_DELAY + INITIAL_TICKS_UNTIL_NEXT_ATTACK + 1);
