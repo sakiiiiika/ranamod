@@ -2,8 +2,8 @@
 
 Description of the mod in English:
 
-[![CurseForge](https://github.com/user-attachments/assets/139bfe94-15e7-4c22-bf66-e85f730bb6eb)](https://www.curseforge.com/minecraft/mc-mods/rana-mod)
-[![Modrinth](https://github.com/user-attachments/assets/629b5e07-adb4-4a5f-a43b-70fd75d15903)](https://modrinth.com/mod/rana-mod)
+[![CurseForge](https://raw.githubusercontent.com/wiki/sakiiiiika/ranamod/img/curseforge.png)](https://www.curseforge.com/minecraft/mc-mods/rana-mod)
+[![Modrinth](https://raw.githubusercontent.com/wiki/sakiiiiika/ranamod/img/modrinth.png)](https://modrinth.com/mod/rana-mod)
 
 [このModの日本語での説明](https://github.com/sakiiiiika/ranamod/wiki/Japanese)
 

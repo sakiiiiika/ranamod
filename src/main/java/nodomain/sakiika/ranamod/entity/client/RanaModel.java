@@ -160,8 +160,8 @@ public class RanaModel<T extends Entity> extends HierarchicalModel<T> implements
 		return LeftArm;
 	}
 	public ModelPart getArm(HumanoidArm pSide) {
-		//return pSide == HumanoidArm.RIGHT ? rightArm() : leftArm();
-		return rightArm();	//At this time return right arm regardless of pSide
+		return pSide == HumanoidArm.RIGHT ? rightArm() : leftArm();
+		//return rightArm();	//At this time return right arm regardless of pSide
 	}
 
 	@Override
@@ -175,12 +175,13 @@ public class RanaModel<T extends Entity> extends HierarchicalModel<T> implements
 		pPoseStack.mulPose(Axis.YP.rotationDegrees(this.getArm(pSide).yRot)); //Rotate Y
 		pPoseStack.mulPose(Axis.ZP.rotationDegrees(this.getArm(pSide).zRot)); //Rotate Z
 
-		//X: Parallel to arm (Positive: Underarm, Negative: Finger)
+		//X: Parallel to arm (Positive: Underarm, Negative: Finger)	(Invert if pSide is left)
 		//Y: Vertical to arm (Positive: Inside body, Negative: Outside body)
 		//Z: Vertical to arm (Positive: Back of body, Negative: Front of body)
-		if (!this.young) pPoseStack.translate(-0.2D, 0.35D, 0.1D);
-		else pPoseStack.translate(-0.125D, 0D, 0.1D);
+		if (!this.young) pPoseStack.translate(pSide == HumanoidArm.RIGHT ? -0.2D : 0.4D, pSide == HumanoidArm.RIGHT ? 0.35D : 0D, 0.1D);
+		else pPoseStack.translate(pSide == HumanoidArm.RIGHT ? -0.125D : 0.25D, 0D, 0.1D);
 
-		pPoseStack.mulPose(Axis.ZP.rotationDegrees(90.0F)); //Rotate Z
+		if (pSide == HumanoidArm.RIGHT) pPoseStack.mulPose(Axis.ZP.rotationDegrees(90.0F)); //Rotate Z
+		else pPoseStack.mulPose(Axis.ZP.rotationDegrees(-45.0F)); //Rotate Z
 	}
 }
